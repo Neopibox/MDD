@@ -12,9 +12,10 @@
 # Modules système
 from xml.dom.minidom import parse
 import sys
-
+import select
 # Modules personnalisés
 import Utils
+import Game
 
 
 # constructeur du menu #
@@ -26,7 +27,7 @@ def create():
         menu["transitions"] = []        #<-------------- A MODIFIER
         
         # recuperation des infos du fichier xml pour la construction du menu
-        path = "./../assets/menu/Menu.xml"
+        path = "assets/menu/Menu.xml"
         doc = parse(path)
         rootElement = doc.documentElement
         
@@ -52,15 +53,15 @@ def create():
                 background["color"] = []
                 
                 backgroundTag = windowTag.getElementsByTagName("background")[0]
-                container = backgroundTag.firstChild.nodeValue
-                
-                ##for line in container:
-                        ##background["content"].append(line)
-                #print container,
+                container = backgroundTag.firstChild.nodeValue.split("\n")
+
+                for line in container:
+                        background["content"].append(list(line))
+                #print background["content"]
                         
                 
                 
-                background["content"] = container
+                #background["content"] = container
                 #backgroundTag.firstChild.nodeValue          #Recuperation du texte stocke entre les balises
 
                 
@@ -123,9 +124,9 @@ def create():
 def getCurrentWindowName(menu):
         return menu["current"]["name"]
 
-# Renvoie les donnees de la fenetre courante
-def getCurrentWindowData(menu):
-        return menu["current"]["data"]
+## Renvoie les donnees de la fenetre courante
+#def getCurrentWindowData(menu):
+        #return menu["current"]["data"]
 
 
 
@@ -139,6 +140,7 @@ def getCurrentWindowBackgroundColor(menu):
 
 
 
+
 # Renvoie la liste des boutons
 def getCurrentWindowButtonList(menu):
         return menu["current"]["data"]["buttons"]["list"]
@@ -146,6 +148,11 @@ def getCurrentWindowButtonList(menu):
 # Renvoie le bouton selectionne 
 def getCurrentWindowButtonSelected(menu):
         return menu["current"]["data"]["buttons"]["selected"]
+
+
+def setCurrentWindowButtonSelected(menu, buttonName):
+        menu["current"]["data"]["buttons"]["selected"] = buttonName
+
 
 
 
@@ -172,33 +179,44 @@ def getBackgroundWindow(menu):
 # Affiche la fenetre courante
 def show(menu):
        
-        
         #Afficher le fond de la fenetre
-        Utils.goto(0,0)                                                         # A reutiliser pour affichage
         background = getBackgroundWindow(menu)["content"]
         color, backgroundColor = getBackgroundWindow(menu)["color"]
         Utils.setTextColor(color, backgroundColor)
-        sys.stdout.write(background)
+       
+        for y in range(0, len(background)):
+                for x in range(0, len(background[y])):
+                        Utils.goto(x,y)                                                         # A reutiliser pour affichage
+                        sys.stdout.write(background[y][x]+"\n")
 
         Utils.resetTextFormat()    
-        
-        Utils.goto(0,0)  
+         
         foreground = getCurrentWindowBackgroundContent(menu)
         color, backgroundColor = getCurrentWindowBackgroundColor(menu)
         Utils.setTextColor(color, backgroundColor)
-        sys.stdout.write(foreground)
-         
+        
+        for y in range(0, len(foreground)):
+                for x in range(1, len(foreground[y])):
+                        Utils.goto(x+2,y+1)                                                         # A reutiliser pour affichage
+                        sys.stdout.write(foreground[y][x]+"\n")
+        Utils.resetTextFormat()   
+        
 
+        button = getCurrentWindowButtonList(menu)
+        # affichage des bouttons en ligne 
+        #for x in range(0, len(button)):
+                #Utils.goto(x*30+20,40)                                                         # A reutiliser pour affichage
+                #sys.stdout.write(button[x]+"\n")
         
         
-        #affichage des boutons
-        #xb = 60
-        #yb = 36
-        #for b in list(getCurrentWindowButtonList(menu)):
-                #Utils.goto(xb,yb+b)
-                #button = b
-                #sys.stdout.write(button)
-                
+        for y in range(0, len(button)):
+                Utils.goto(70,y*2+38)                                                         # A reutiliser pour affichage
+                if button[y] == getCurrentWindowButtonSelected(menu):
+                        Utils.setTextColor("black", "white")
+                        sys.stdout.write("> "+button[y]+" <\n")
+                else : 
+                        Utils.resetTextFormat() 
+                        sys.stdout.write(" "+button[y]+"\n")
         
         
         
@@ -211,34 +229,72 @@ def show(menu):
 
                 Utils.goto(x,y)
                 Utils.setTextForm(form)
-                Utils.setTextColor('"'+color+'"', '"'+backgroundColor+'"')
-                sys.stdout.write(texte)
-                Utils.resetText()
+                Utils.setTextColor(color, backgroundColor)
+                
+                sys.stdout.write(texte+"\n")
+                Utils.resetTextFormat()
                 
         
+
+
+def interact(menu, key):
+        # Changer le bouton selectionne de la fenetre     
+        buttonSelected = getCurrentWindowButtonSelected(menu)
+        buttonList = getCurrentWindowButtonList(menu)
         
+        index = buttonList.index(buttonSelected)
+        if key == "z": 
+                if index-1 >= 0:
+                        setCurrentWindowButtonSelected(menu, buttonList[index-1])
+        elif key == "s":
+                if index+1 <= len(buttonList)-1:
+                        setCurrentWindowButtonSelected(menu, buttonList[index+1])
         
-        
+        # Valider le choix de la fenetre
+        elif key == "d": 
+                changeWindow(menu) # Changement de fenetre
         
         
 
-#def interact():
+def changeWindow(menu):
+        buttonSelected = getCurrentWindowButtonSelected(menu)
         
-#def changeWindow():
+        if buttonSelected == "Retour":
+                transitionSize = len(getTransition(menu))
+                setCurrentWindow(menu, menu["transitions"][transitionSize-1])
+        else:
+                addTransition(menu, getCurrentWindowName(menu))
+                setCurrentWindow(menu, buttonSelected)
+
 
 #def createTransition():
 
-#def addTransition():
+def addTransition(menu, nextWindow):
+        menu["transitions"].append(nextWindow)
+
+def getTransition(menu):
+        return menu["transitions"]
+
 
 if __name__ == "__main__":
         #initialisation
         menu = create()
-        setCurrentWindow(menu,"options")
+        setCurrentWindow(menu,"mainMenu")
         
         #print menu["current"]
         #print getCurrentWindowName(menu)
         #print getCurrentWindowData(menu)
         #print getCurrentWindowBackgroundContent(menu)
-        show(menu)
-
+        #show(menu)
+        def isData():
+                #recuperation des elements clavier
+                return select.select([sys.stdin], [], [], 0.0) == ([sys.stdin], [], [])
+        
+ 
+        
+        while True:
+                getCurrentWindowButtonSelected(menu)
+                if isData():
+                        key = sys.stdin.read(1)
+                        interact(menu, key)
         

@@ -13,7 +13,7 @@ import sys
 import os
 #os.system(env TERM=xterm-256color fish)
 
-def goto((x=0, y=0):
+def goto(x=0, y=0):
         s_x = str(int(x))
         s_y = str(int(y))
         txt = "\033[" + s_y + ";" + s_x + "H"
@@ -111,7 +111,7 @@ if __name__=="__main__":
         print "-------------\nTest 4"
         print "Test 4"
         setTextColor('yellow', 'red')
-        goto((20,10)
+        goto(20,10)
         sys.stdout.write("salut\n")
         resetTextFormat()
         sys.stdout.write("coucou\n")
