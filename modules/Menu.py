@@ -53,16 +53,10 @@ def create():
                 background["color"] = []
                 
                 backgroundTag = windowTag.getElementsByTagName("background")[0]
-                container = backgroundTag.firstChild.nodeValue.split("\n")
+                container = backgroundTag.firstChild.nodeValue.split("\n")  #Recuperation du texte stocke entre les balises
 
                 for line in container:
                         background["content"].append(list(line))
-                #print background["content"]
-                        
-                
-                
-                #background["content"] = container
-                #backgroundTag.firstChild.nodeValue          #Recuperation du texte stocke entre les balises
 
                 
                 if backgroundTag.hasAttributes():
@@ -178,7 +172,7 @@ def getBackgroundWindow(menu):
 
 # Affiche la fenetre courante
 def show(menu):
-       
+      
         #Afficher le fond de la fenetre
         background = getBackgroundWindow(menu)["content"]
         color, backgroundColor = getBackgroundWindow(menu)["color"]
@@ -186,8 +180,9 @@ def show(menu):
        
         for y in range(0, len(background)):
                 for x in range(0, len(background[y])):
-                        Utils.goto(x,y)                                                         # A reutiliser pour affichage
-                        sys.stdout.write(background[y][x]+"\n")
+                        if background[y][x] != " ":
+                                Utils.goto(x,y)                                                         # A reutiliser pour affichage
+                                sys.stdout.write(background[y][x]+"\n")
 
         Utils.resetTextFormat()    
          
@@ -196,7 +191,7 @@ def show(menu):
         Utils.setTextColor(color, backgroundColor)
         
         for y in range(0, len(foreground)):
-                for x in range(1, len(foreground[y])):
+                for x in range(0, len(foreground[y])):
                         Utils.goto(x+2,y+1)                                                         # A reutiliser pour affichage
                         sys.stdout.write(foreground[y][x]+"\n")
         Utils.resetTextFormat()   
@@ -210,14 +205,14 @@ def show(menu):
         
         
         for y in range(0, len(button)):
-                Utils.goto(70,y*2+38)                                                         # A reutiliser pour affichage
+                Utils.goto(70,y*2+28)                                                         # A reutiliser pour affichage
                 if button[y] == getCurrentWindowButtonSelected(menu):
                         Utils.setTextColor("black", "white")
-                        sys.stdout.write("> "+button[y]+" <\n")
+                        sys.stdout.write("> "+button[y]+"\n")
                 else : 
-                        Utils.resetTextFormat() 
-                        sys.stdout.write(" "+button[y]+"\n")
-        
+                        Utils.resetTextFormat()
+                        sys.stdout.write("  "+button[y]+"\n")
+                Utils.resetTextFormat()        
         
         
         #affichage des textes
@@ -238,6 +233,7 @@ def show(menu):
 
 
 def interact(menu, key):
+        
         # Changer le bouton selectionne de la fenetre     
         buttonSelected = getCurrentWindowButtonSelected(menu)
         buttonList = getCurrentWindowButtonList(menu)
@@ -253,15 +249,20 @@ def interact(menu, key):
         # Valider le choix de la fenetre
         elif key == "d": 
                 changeWindow(menu) # Changement de fenetre
+                
         
         
 
 def changeWindow(menu):
+        
         buttonSelected = getCurrentWindowButtonSelected(menu)
         
         if buttonSelected == "Retour":
                 transitionSize = len(getTransition(menu))
                 setCurrentWindow(menu, menu["transitions"][transitionSize-1])
+        if buttonSelected == "Quit":
+                quit() 
+        
         else:
                 addTransition(menu, getCurrentWindowName(menu))
                 setCurrentWindow(menu, buttonSelected)

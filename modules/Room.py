@@ -11,7 +11,7 @@
 
 # Modules système
 from xml.dom.minidom import parse
-
+import sys
 # Modules personnalisés
 import Chest
 import Arrow
@@ -31,7 +31,7 @@ def create(dungeonName, roomName):
         r["rightRoom"]=None
         
         # -- Parsage du fichier XML correspondant --
-        path = "./../assets/rooms/" + dungeonName + "/" + roomName + ".xml"
+        path = "./assets/rooms/" + dungeonName + "/" + roomName + ".xml"
         doc = parse(path)
         rootBeacon = doc.documentElement
 
@@ -82,7 +82,7 @@ def show(r):
         # Affichage du fond
         for y in range(0, len(r["background"])):
                 for x in range(0, len(r["background"][y])):
-                        Utils.goto((x, y)
+                        Utils.goto(x, y)
                         sys.stdout.write(r["background"][y][x])
         
         # Affichage des portes
@@ -109,25 +109,25 @@ def show(r):
         # Affichage des coffres
         for currentChest in r["chests"]:
                 x, y = Chest.getPosition(currentChest)
-                Utils.goto((x, y)
+                Utils.goto(x, y)
                 Chest.show(currentChest)
         
         # Affichage des mobs
         for currentMob in r["mobs"]:
                 x, y = Mob.getPosition(currentMob)
-                Utils.goto((x, y)
+                Utils.goto(x, y)
                 Mob.show(currentMob)
         
         # Affichage des projectiles
         for currentArrow in r["arrows"]:
                 x, y = Arrow.getPosition(currentArrow)
-                Utils.goto((x, y)
+                Utils.goto(x, y)
                 Arrow.show(currentArrow)
 
 def drawBlankRectangle(x, y, w, h):
         for i_y in range(0, h):
                 for i_x in range(0, w):
-                        Utils.goto((x + i_x, y + i_y)
+                        Utils.goto(x + i_x, y + i_y)
                         sys.stdout.write(" ")
 
 def getChestByPosition(r, x, y):
@@ -173,7 +173,7 @@ def setRightRoom(r, right_room):
 # Tests
 if __name__ == "__main__":
         room = create("forest", "forest_1")
-        Utils.goto((0, 0)
+        Utils.goto(0, 0)
         setUpRoom(room, "anotherRoom")
         show(room)
 

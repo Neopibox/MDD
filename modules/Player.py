@@ -32,6 +32,18 @@ def setPosition(player,x,y):
         player["x"] = x
         player["y"] = y
 
+
+def move(player, direction):
+        if direction == "up":
+                player["y"] += -1
+        if direction == "down":
+                player["y"] += 1
+        if direction == "right":
+                player["x"] += 1
+        if direction == "left":
+                player["x"] += -1
+
+
 #def getHealth(p):
 #        return Health
 

@@ -9,9 +9,13 @@
 ## LEVEQUE Dorian & ROUE Evan 	S2P 	ENIB	     01/04/2016 ##
 ##################################################################
 
+# Modules systeme
+import sys
+
 # Modules personnalisés
 import Dungeon
 import Player
+import Utils
 
 def create():
         game = dict()
@@ -23,14 +27,20 @@ def create():
         
         return game
 
-def show(g):
+def show(g):        
         # Affichage de l'interface
         
         # Affichage du donjon
-        Dungeon.show(g["dungeon"])
+        #Dungeon.show(g["dungeon"])
         
         # Affichage du joueur
-        Player.show(g["player"])
+        #Player.show(g["player"])
+        
+        
+        x, y = Player.getPosition(g["player"])
+        Utils.goto(x,y)
+        sys.stdout.write("Link\n")
+
 
 def interact(g, key):
                 if key == "z": 
@@ -45,3 +55,4 @@ def interact(g, key):
                 Player.move(g["player"], direction)
                 
                 #elif key == "p":                      # appel de la fonction pause
+                        

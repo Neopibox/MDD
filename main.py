@@ -47,25 +47,12 @@ def init():
         
 
         Menu.setCurrentWindow(menu,"mainMenu")
-
-
-        
-#def show():
-        #effacer la console 
-        #sys.stdout.write("\033[1;1H")
-        #sys.stdout.write("\033[2J")
-        #os.system('setterm -clear all')
-       
-        
-        ##affichage du joueur)
-        ##deplacement du joueur:
-        #x, y = Player.getPosition(player)
-        #Utils.goto(x,y)
-        #sys.stdout.write("Link")
         
         
 
 def run():
+        n = 0
+        global game, menu
         while True:
                 
                 currentWindowName = Menu.getCurrentWindowName(menu)
@@ -73,26 +60,15 @@ def run():
                         if refresh==True:
                                 Menu.show(menu)
                 else:
-                        Game.show(game)
+                        if(n % 10):
+                                #effacer la console 
+                                sys.stdout.write("\033[2J")
+                                Menu.show(menu)
+                                Game.show(game)
                 interact()
                 #move()
-                time.sleep(0.2)
-        
-#def move():
-        #global player, direction      
-       
-        ##deplacement du joueur:
-        #x, y = Player.getPosition(player)
-        #dt = 0.25
-
-        #if direction == 'Up': Player.setPosition(player, x, y-1*dt)
-        #if direction == 'Down': Player.setPosition(player, x, y+1*dt)
-        #if direction == 'Right': Player.setPosition(player, x+2*dt, y)
-        #if direction == 'Left': Player.setPosition(player, x-2*dt, y)
-        #direction = " "
-
-        
-        #print Player.getPosition(player)    
+                time.sleep(0.1)
+                n += 1   
         
 
 def interact(): 
@@ -117,9 +93,6 @@ def interact():
                 refresh = True
                 
                 
-                
-        
-        
         while isData():
                 sys.stdin.read(5)
                 #termios.tcflush(sys.stdin, termios.TCIFLUSH)   # Permet de vider, le buffer des touches d'entree
@@ -136,7 +109,7 @@ def quit():
         
         #rendre visible le curseur
         os.system('setterm -cursor on')
-        
+        os.system('setterm -clear all')
         sys.exit()
 init()
 run()

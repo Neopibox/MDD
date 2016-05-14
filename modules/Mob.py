@@ -31,7 +31,7 @@ def move(m):
         return
 
 def show(m):
-        Utils.goto((m["x"], m["y"])
+        Utils.goto(m["x"], m["y"])
         sys.stdout.write(m["sprite"])
         return
 
